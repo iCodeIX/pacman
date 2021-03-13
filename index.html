@@ -1,0 +1,476 @@
+<html lang="en">
+<head>
+<title>Pacman</title>
+<style type="text/css">
+    body{
+        background-color: black;
+        margin: 0;
+        padding: 0;
+    }
+    div.row div{
+        width: 20px;
+        height:20px;
+        display: inline-block;
+    }
+
+    div.brick{
+        background-image: url('brick1.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position:center;
+    }
+
+    div.coin{
+        background: url('coin.gif');
+        background-size: 10px 10px;
+        background-repeat: no-repeat;
+        background-position:center;
+    }
+
+    div.cherry{
+        background: url('cherry.gif');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position:center;
+    }
+
+    div#ghost1{
+        background: url('ghost1.gif');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position:center;
+        width: 20px;
+        height: 20px;
+        position: absolute;
+    }
+
+    div#ghost2{
+        background: url('ghost2.gif');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position:center;
+        width: 20px;
+        height: 20px;
+        position: absolute;
+    }
+
+
+    div#pacman{
+        background-image: url('right.gif');
+        background-repeat: no-repeat;
+        background-position:center;
+        background-size: 15px 15px;
+        width: 20px;
+        height: 20px;
+        position: absolute;
+    
+    }
+
+    div#score{
+        border: 1px solid white;
+        width: 150px;
+        height: 30px;
+        color: white;
+        padding: 7px;
+        text-align: center;
+        position: absolute;
+        top:20px;
+        left:778px;
+    }
+    div#worldtext{
+        border: 1px solid white;
+        width: 150px;
+        height: 30px;
+        color: white;
+        padding: 7px;
+        text-align: center;
+        position: absolute;
+        top:20px;
+        left:340px;
+    }
+    
+    div.center-world {
+        margin: 50 auto;
+        width: 50%;
+        height: 50%;
+        position: relative;
+        top:50px;
+    }
+
+</style>
+</head>
+<body>
+    <div id="container">
+        <div id="worldText">World:</div>
+        <div id="score">200</div>
+        <div class="center-world">
+            <div id="world"></div>
+            <div id="pacman"></div>
+            <div id="ghost1"></div>
+            <div id="ghost2"></div>
+            
+        </div>
+    </div>
+
+ <audio id="myAudio" controls autoplay style="visibility:hidden">
+        <source src="pacman_beginning.mp3" type="audio/mpeg">
+    </audio>
+<script>
+
+    let randomWorld = Math.floor(Math.random() * 5) + 1;// return random number between 1-5 then assign to variable
+    let randomBrick = Math.floor(Math.random() * 2) + 1;
+    var myAudio = document.getElementById("myAudio");
+
+
+    //worlds structure
+    // 0 for empty, 1 for coin, 2 for brick, 3 for cherry
+    if(randomWorld==1){
+        var world = [
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+        [2,0,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,3,2],
+        [2,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,2,1,1,1,1,2,1,1,1,1,1,1,2,1,1,1,1,2,1,1,1,1,1,2],
+        [2,3,1,1,1,1,2,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,2,1,2,2,2,2,2,2,1,2,2,2,2,2,2,2,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,1,2,1,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,2,1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,2],
+        [2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,2,2,2,1,1,1,1,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,2,2,1,2],
+        [2,3,1,1,1,2,1,1,2,1,1,2,1,1,3,1,1,1,1,1,1,2,1,1,1,2,1,2,1,2],
+        [2,1,1,1,1,2,1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,2,1,1,2,1,1,2,1,2],
+        [2,1,1,1,2,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,2,1,2],
+        [2,1,1,2,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,2,2,2,1,1,1,2,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,2,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+           
+    ];
+    }
+    else if(randomWorld==2){
+        var world = [
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+        [2,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,2],
+        [2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,2,2,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,3,2,1,2,1,2,1,2,1,2,1,2,3,2,1,2,1,2,1,2,1,2,1,2,1,2,2,2,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,3,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,2,2,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,2,2,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,1,2],
+        [2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,2],
+
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,2,2,2,1,1,1,1,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,2,2,1,2],
+        [2,3,1,1,1,2,1,1,2,1,1,2,1,1,3,1,1,1,1,1,1,2,1,1,1,2,1,2,1,2],
+        [2,1,1,1,1,2,1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,2,1,1,2,1,1,2,1,2],
+        [2,1,1,1,2,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,2,1,2],
+        [2,1,1,2,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,2,2,2,1,1,1,2,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,2,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+           
+            
+    ];
+    }
+    else if(randomWorld==3){
+        var world = [
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+        [2,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,1,2,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,2,1,2],
+        [2,1,2,1,2,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,2,1,2],
+        [2,1,2,1,2,1,2,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,2,1,1,1,1,2,1,2],
+        [2,1,2,1,2,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,2,1,1,1,2,1,2],
+        [2,1,2,1,2,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,2,1,1,2,1,2],
+        [2,1,2,1,2,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,2,1,2,1,2],
+        [2,1,2,2,1,2,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,2,2,1,2],
+        [2,1,2,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,2,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,2],
+
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,2,2,2,1,1,1,1,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,2,2,1,2],
+        [2,3,1,1,1,2,1,1,2,1,1,2,1,1,3,1,1,1,1,1,1,2,1,1,1,2,1,2,1,2],
+        [2,1,1,1,1,2,1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,2,1,1,2,1,1,2,1,2],
+        [2,1,1,1,2,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,2,1,2],
+        [2,1,1,2,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,2,2,2,1,1,1,2,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,2,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+            
+
+    ];
+    }
+    else if(randomWorld==4){
+        var world = [
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+        [2,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,2,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,2,1,1,1,2,1,1,1,1,2,1,1,1,1,2,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,2,1,2,1,1,1,2,1,1,2,1,2,1,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,2,1,1,1,1,2,1,1,2,1,2,1,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,3,1,1,1,2,3,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,2,1,2,1,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,2,1,2,1,1,2,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,2,2,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,2],
+
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,2,2,2,1,1,1,1,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,2,2,1,2],
+        [2,3,1,1,1,2,1,1,2,1,1,2,1,1,3,1,1,1,1,1,1,2,1,1,1,2,1,2,1,2],
+        [2,1,1,1,1,2,1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,2,1,1,2,1,1,2,1,2],
+        [2,1,1,1,2,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,2,1,2],
+        [2,1,1,2,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,2,2,2,1,1,1,2,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,2,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+           
+        
+    ];
+    }
+    else if(randomWorld==5){
+        var world = [
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+        [2,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,2,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,2,1,1,1,1,1,2,2,2,2,1,1,1,1,1,1,2,1,2,1,1,1,1,2],
+        [2,2,1,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,2],
+        [2,1,2,1,1,2,1,1,1,1,1,3,3,3,3,3,1,1,1,1,1,2,1,1,2,1,2,1,1,2],
+        [2,1,1,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,1,2,3,3,2,1,2,3,3,2,1,2],
+        [2,1,2,1,1,2,1,1,1,1,1,1,2,2,2,1,1,1,1,2,3,3,2,1,2,3,3,2,1,2],
+        [2,2,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,2,2,1,1,1,2,2,1,1,2],
+        [2,1,1,1,1,1,1,2,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,2],
+
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,1,2,2,2,2,1,1,1,1,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,2,2,1,2],
+        [2,3,1,1,1,2,1,1,2,1,1,2,1,1,3,1,1,1,1,1,1,2,1,1,1,2,1,2,1,2],
+        [2,1,1,1,1,2,1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,2,1,1,2,1,1,2,1,2],
+        [2,1,1,1,2,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,2,1,2],
+        [2,1,1,2,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,2],
+        [2,1,2,2,2,2,1,1,1,2,2,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,2,1,2],
+        [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+        [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+           
+            
+    ];
+    }
+   //variables declaration
+
+    var pacman={
+        x:1,
+        y:1
+    }
+
+    var ghost1={
+        x:14,
+        y:5
+    }
+
+    var ghost2={
+        x:28,
+        y:13
+    }
+
+    var score=0, direction="right";
+    var cherry=0;
+    
+//all functions used in the game
+
+
+function displayWorld(){//populating rows with divs of items
+    
+    var output='';
+
+    for(var i=0; i<world.length; i++){
+        output+= "\n<div class='row'>\n";
+        for(var j=0; j<world[i].length; j++){
+            if(world[i][j]==1){
+            output +="<div class='coin'></div>";
+            }
+            else if(world[i][j]==2){
+            output +="<div class ='brick' id='brick'></div>";
+            }
+            else if(world[i][j]==3){
+            output +="<div class='cherry'></div>";
+            }
+            else if(world[i][j]==0){
+            output +="<div class='empty'></div>";
+            } 
+        }
+
+        output+="\n</div>";
+    }
+    //console.log(output);
+    document.getElementById('world').innerHTML=output;
+}
+
+function displayPacman(){//set the location of pacman, 1 movement = 20px
+    document.getElementById("pacman").style.top = pacman.y*20+"px";
+    document.getElementById("pacman").style.left = pacman.x*20+"px";
+}
+
+function displayScore(){ // update score everytime pacman ate a coin
+    document.getElementById("score").innerHTML ="SCORE : "+score;  
+}
+
+function displayWorldText(){ // update world number everytime the map changed.
+    document.getElementById("worldText").innerHTML ="WORLD "+ randomWorld;  
+}
+
+function pacmanDirection(){ // pacman direction , change image depend on the clicked key
+    document.getElementById("pacman").style.backgroundImage="url('"+direction+".gif')";
+}
+
+function displayPacman(){//set the location of pacman, 1 movement =20px
+    document.getElementById("pacman").style.top = pacman.y*20+"px";
+    document.getElementById("pacman").style.left = pacman.x*20+"px";
+}
+
+function displayGhost(){//set the location of pacman, 1 movement = 20px
+    document.getElementById("ghost1").style.top = ghost1.y*20+"px";
+    document.getElementById("ghost1").style.left = ghost1.x*20+"px";
+
+    document.getElementById("ghost2").style.top = ghost2.y*20+"px";
+    document.getElementById("ghost2").style.left = ghost2.x*20+"px";
+}
+
+function isPacmanAndGhostCollide(){
+    if(pacman.x == ghost1.x && pacman.y == ghost1.y){
+       location.reload();
+    }
+    if(pacman.x == ghost2.x && pacman.y == ghost2.y){
+       location.reload();
+    }
+}
+
+
+function ghostMovement(){    
+    //ghost 1 movement
+    if(pacman.y < ghost1.y && world[ghost1.y-1][ghost1.x] != 2){// pacman top, ghost move at the top
+        ghost1.y--;
+    }
+    else if(pacman.y > ghost1.y && world[ghost1.y+1][ghost1.x] != 2){//pacman bot, ghost move at the bottom
+        ghost1.y++;
+    }
+    
+    else if(pacman.x < ghost1.x && world[ghost1.y][ghost1.x-1] != 2){//ghost move left
+       ghost1.x--;
+    }
+
+    else if(pacman.x > ghost1.x && world[ghost1.y][ghost1.x+1] != 2){//ghost move right
+       ghost1.x++;
+    }
+    
+    //ghost 2 movement  
+    if(pacman.y < ghost2.y && world[ghost2.y-1][ghost2.x] != 2){// pacman top, ghost move at the top
+        ghost2.y--;
+    }
+    else if(pacman.y > ghost2.y && world[ghost2.y+1][ghost2.x] != 2){//pacman bot, ghost move at the bottom
+        ghost2.y++;
+    }
+    
+    else if(pacman.x < ghost2.x && world[ghost2.y][ghost2.x-1] != 2){//ghost move left
+       ghost2.x--;
+    }
+
+    else if(pacman.x > ghost2.x && world[ghost2.y][ghost2.x+1] != 2){//ghost move right
+       ghost2.x++;
+    }
+      
+    
+
+    displayGhost();
+    isPacmanAndGhostCollide();
+
+}
+
+setInterval(ghostMovement, 500);
+
+ //call all functions at first load of the game
+displayWorld();
+displayPacman();
+displayScore();
+displayWorldText();
+pacmanDirection();
+displayGhost();
+
+
+document.onkeydown = function(e){
+    if(e.keyCode == 37 && world[pacman.y][pacman.x-1]!=2){// when key left clicked
+        pacman.x--;
+        direction="left"
+        pacmanDirection();
+        isPacmanAndGhostCollide();
+    }
+    else if(e.keyCode == 39 && world[pacman.y][pacman.x+1]!=2){//// when key right clicked
+    
+        pacman.x++;
+        direction="right"
+        pacmanDirection();
+        isPacmanAndGhostCollide();
+    }
+    else if(e.keyCode == 38 && world[pacman.y-1][pacman.x]!=2){// when key up clicked
+    
+        pacman.y--;
+        direction="up"
+        pacmanDirection();
+        isPacmanAndGhostCollide();
+    }
+    else if(e.keyCode == 40 && world[pacman.y+1][pacman.x]!=2){// when key down clicked
+        
+        pacman.y++;
+        direction="down"
+        pacmanDirection();
+        isPacmanAndGhostCollide();
+    }
+    
+
+    if(world[pacman.y][pacman.x]==1){  // when pacman ate coin , score(10pts) added then empty the div
+        world[pacman.y][pacman.x]=0;
+        score+=10;
+        displayWorld();
+        displayScore();
+         document.getElementById("myAudio").src='pacman_chomp.mp3'; 
+      
+    }
+    else if(world[pacman.y][pacman.x]==3){ // when pacman ate cherry , score(20pts) added then empty the div
+        world[pacman.y][pacman.x]=0;
+        score+=20;
+        displayWorld();
+        displayScore();
+    }
+    
+
+    
+    //console.log(e.keyCode);
+    displayPacman();
+}
+
+
+
+</script>
+</body>
+</html>
